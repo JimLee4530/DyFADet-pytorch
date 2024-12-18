@@ -1,0 +1,597 @@
+nohup: ignoring input
+start training
+{'dataset': {'crop_ratio': [0.9, 1.0],
+             'default_fps': 15,
+             'downsample_rate': 1,
+             'feat_folder': './data/anet_1.3/tsp_features',
+             'feat_stride': 16,
+             'file_ext': '.npy',
+             'file_prefix': 'v_',
+             'force_upsampling': False,
+             'input_dim': 512,
+             'json_file': './data/anet_1.3/annotations/anet1.3_tsp_filtered.json',
+             'max_seq_len': 768,
+             'num_classes': 1,
+             'num_frames': 16,
+             'trunc_thresh': 0.5},
+ 'dataset_name': 'anet',
+ 'devices': [0],
+ 'init_rand_seed': 1234567891,
+ 'loader': {'batch_size': 16, 'num_workers': 4},
+ 'model': {'backbone_arch': [2, 2, 5],
+           'backbone_type': 'SGP',
+           'boudary_kernel_size': 3,
+           'cloformer_kersizes': [1],
+           'downsample_type': 'max',
+           'embd_dim': 256,
+           'embd_kernel_size': 3,
+           'embd_with_ln': True,
+           'fpn_dim': 256,
+           'fpn_type': 'identity',
+           'fpn_with_ln': True,
+           'head_dim': 512,
+           'head_kernel_size': 3,
+           'head_num_layers': 3,
+           'head_with_ln': True,
+           'init_conv_vars': 0.2,
+           'input_dim': 512,
+           'input_noise': 0.5,
+           'iou_weight_power': 1,
+           'k': 1.3,
+           'max_buffer_len_factor': 1.0,
+           'max_seq_len': 768,
+           'n_sgp_win_size': 15,
+           'num_bins': 12,
+           'num_classes': 1,
+           'regression_range': [[0, 4],
+                                [4, 8],
+                                [8, 16],
+                                [16, 32],
+                                [32, 64],
+                                [64, 10000]],
+           'scale_factor': 2,
+           'sgp_mlp_dim': 2048,
+           'test_cfg': {'duration_thresh': 0.1,
+                        'ext_score_file': './data/anet_1.3/annotations/cuhk_val_simp_share.json',
+                        'iou_threshold': 0.1,
+                        'max_seg_num': 200,
+                        'min_score': 0.001,
+                        'multiclass_nms': False,
+                        'nms_method': 'soft',
+                        'nms_sigma': 0.7,
+                        'pre_nms_thresh': 0.001,
+                        'pre_nms_topk': 2000,
+                        'voting_thresh': 0.95},
+           'train_cfg': {'center_sample': 'radius',
+                         'center_sample_radius': 1.5,
+                         'clip_grad_l2norm': 0.4,
+                         'cls_prior_prob': 0.01,
+                         'dropout': 0.0,
+                         'droppath': 0.1,
+                         'head_empty_cls': [],
+                         'init_loss_norm': 400,
+                         'label_smoothing': 0.1,
+                         'loss_weight': 1.0},
+           'use_abs_pe': True,
+           'use_trident_head': True},
+ 'model_name': 'TriDet',
+ 'opt': {'epochs': 5,
+         'eta_min': 5e-05,
+         'learning_rate': 0.001,
+         'momentum': 0.9,
+         'schedule_gamma': 0.1,
+         'schedule_steps': [],
+         'schedule_type': 'cosine',
+         'type': 'AdamW',
+         'warmup': True,
+         'warmup_epochs': 10,
+         'weight_decay': 0.04},
+ 'output_folder': './ckpt/',
+ 'test_cfg': {'duration_thresh': 0.1,
+              'ext_score_file': './data/anet_1.3/annotations/cuhk_val_simp_share.json',
+              'iou_threshold': 0.1,
+              'max_seg_num': 200,
+              'min_score': 0.001,
+              'multiclass_nms': False,
+              'nms_method': 'soft',
+              'nms_sigma': 0.7,
+              'pre_nms_thresh': 0.001,
+              'pre_nms_topk': 2000,
+              'voting_thresh': 0.95},
+ 'train_cfg': {'center_sample': 'radius',
+               'center_sample_radius': 1.5,
+               'clip_grad_l2norm': 0.4,
+               'cls_prior_prob': 0.01,
+               'dropout': 0.0,
+               'droppath': 0.1,
+               'head_empty_cls': [],
+               'init_loss_norm': 400,
+               'label_smoothing': 0.1,
+               'loss_weight': 1.0},
+ 'train_split': ['training'],
+ 'val_split': ['validation']}
+Using model EMA ...
+
+Start training model TriDet ...
+
+[Train]: Epoch 0 started
+Epoch: [000][00010/00624]	Time 0.87 (0.87)	Loss 0.39 (0.39)
+		cls_loss 0.13 (0.13)	reg_loss 0.26 (0.26)
+Epoch: [000][00020/00624]	Time 0.14 (0.51)	Loss 0.61 (0.50)
+		cls_loss 0.18 (0.15)	reg_loss 0.43 (0.35)
+Epoch: [000][00030/00624]	Time 0.14 (0.38)	Loss 0.98 (0.66)
+		cls_loss 0.27 (0.19)	reg_loss 0.71 (0.47)
+Epoch: [000][00040/00624]	Time 0.14 (0.32)	Loss 1.03 (0.75)
+		cls_loss 0.26 (0.21)	reg_loss 0.77 (0.54)
+Epoch: [000][00050/00624]	Time 0.14 (0.29)	Loss 1.07 (0.82)
+		cls_loss 0.25 (0.22)	reg_loss 0.82 (0.60)
+Epoch: [000][00060/00624]	Time 0.14 (0.26)	Loss 0.73 (0.80)
+		cls_loss 0.20 (0.21)	reg_loss 0.53 (0.59)
+Epoch: [000][00070/00624]	Time 0.14 (0.25)	Loss 0.68 (0.78)
+		cls_loss 0.21 (0.21)	reg_loss 0.46 (0.57)
+Epoch: [000][00080/00624]	Time 0.14 (0.23)	Loss 0.91 (0.80)
+		cls_loss 0.42 (0.24)	reg_loss 0.49 (0.56)
+Epoch: [000][00090/00624]	Time 0.14 (0.22)	Loss 0.60 (0.78)
+		cls_loss 0.29 (0.25)	reg_loss 0.31 (0.53)
+Epoch: [000][00100/00624]	Time 0.14 (0.22)	Loss 0.69 (0.77)
+		cls_loss 0.34 (0.25)	reg_loss 0.35 (0.51)
+Epoch: [000][00110/00624]	Time 0.14 (0.21)	Loss 0.67 (0.76)
+		cls_loss 0.31 (0.26)	reg_loss 0.36 (0.50)
+Epoch: [000][00120/00624]	Time 0.14 (0.20)	Loss 0.46 (0.74)
+		cls_loss 0.24 (0.26)	reg_loss 0.22 (0.48)
+Epoch: [000][00130/00624]	Time 0.14 (0.20)	Loss 0.58 (0.72)
+		cls_loss 0.31 (0.26)	reg_loss 0.27 (0.46)
+Epoch: [000][00140/00624]	Time 0.14 (0.19)	Loss 0.51 (0.71)
+		cls_loss 0.28 (0.26)	reg_loss 0.23 (0.44)
+Epoch: [000][00150/00624]	Time 0.14 (0.19)	Loss 0.57 (0.70)
+		cls_loss 0.31 (0.27)	reg_loss 0.26 (0.43)
+Epoch: [000][00160/00624]	Time 0.14 (0.19)	Loss 0.38 (0.68)
+		cls_loss 0.24 (0.27)	reg_loss 0.14 (0.41)
+Epoch: [000][00170/00624]	Time 0.14 (0.19)	Loss 0.85 (0.69)
+		cls_loss 0.46 (0.28)	reg_loss 0.39 (0.41)
+Epoch: [000][00180/00624]	Time 0.14 (0.18)	Loss 0.64 (0.69)
+		cls_loss 0.34 (0.28)	reg_loss 0.30 (0.41)
+Epoch: [000][00190/00624]	Time 0.14 (0.18)	Loss 0.61 (0.68)
+		cls_loss 0.33 (0.28)	reg_loss 0.28 (0.40)
+Epoch: [000][00200/00624]	Time 0.14 (0.18)	Loss 0.63 (0.68)
+		cls_loss 0.34 (0.29)	reg_loss 0.29 (0.39)
+Epoch: [000][00210/00624]	Time 0.14 (0.18)	Loss 0.46 (0.67)
+		cls_loss 0.26 (0.28)	reg_loss 0.20 (0.38)
+Epoch: [000][00220/00624]	Time 0.14 (0.18)	Loss 0.47 (0.66)
+		cls_loss 0.30 (0.28)	reg_loss 0.17 (0.37)
+Epoch: [000][00230/00624]	Time 0.14 (0.17)	Loss 0.56 (0.66)
+		cls_loss 0.30 (0.29)	reg_loss 0.26 (0.37)
+Epoch: [000][00240/00624]	Time 0.14 (0.17)	Loss 0.62 (0.65)
+		cls_loss 0.31 (0.29)	reg_loss 0.30 (0.37)
+Epoch: [000][00250/00624]	Time 0.14 (0.17)	Loss 0.68 (0.65)
+		cls_loss 0.37 (0.29)	reg_loss 0.31 (0.36)
+Epoch: [000][00260/00624]	Time 0.14 (0.17)	Loss 0.60 (0.65)
+		cls_loss 0.35 (0.29)	reg_loss 0.25 (0.36)
+Epoch: [000][00270/00624]	Time 0.14 (0.17)	Loss 0.38 (0.64)
+		cls_loss 0.23 (0.29)	reg_loss 0.15 (0.35)
+Epoch: [000][00280/00624]	Time 0.14 (0.17)	Loss 0.55 (0.64)
+		cls_loss 0.33 (0.29)	reg_loss 0.22 (0.35)
+Epoch: [000][00290/00624]	Time 0.14 (0.17)	Loss 0.33 (0.63)
+		cls_loss 0.20 (0.29)	reg_loss 0.13 (0.34)
+Epoch: [000][00300/00624]	Time 0.14 (0.17)	Loss 0.64 (0.63)
+		cls_loss 0.35 (0.29)	reg_loss 0.28 (0.34)
+Epoch: [000][00310/00624]	Time 0.14 (0.17)	Loss 0.64 (0.63)
+		cls_loss 0.37 (0.29)	reg_loss 0.27 (0.34)
+Epoch: [000][00320/00624]	Time 0.14 (0.17)	Loss 0.51 (0.63)
+		cls_loss 0.29 (0.29)	reg_loss 0.22 (0.33)
+Epoch: [000][00330/00624]	Time 0.14 (0.16)	Loss 0.47 (0.62)
+		cls_loss 0.30 (0.29)	reg_loss 0.17 (0.33)
+Epoch: [000][00340/00624]	Time 0.14 (0.16)	Loss 0.56 (0.62)
+		cls_loss 0.32 (0.29)	reg_loss 0.24 (0.33)
+Epoch: [000][00350/00624]	Time 0.14 (0.16)	Loss 0.67 (0.62)
+		cls_loss 0.37 (0.30)	reg_loss 0.30 (0.32)
+Epoch: [000][00360/00624]	Time 0.14 (0.16)	Loss 0.53 (0.62)
+		cls_loss 0.31 (0.30)	reg_loss 0.22 (0.32)
+Epoch: [000][00370/00624]	Time 0.14 (0.16)	Loss 0.54 (0.62)
+		cls_loss 0.29 (0.30)	reg_loss 0.25 (0.32)
+Epoch: [000][00380/00624]	Time 0.14 (0.16)	Loss 0.53 (0.61)
+		cls_loss 0.31 (0.30)	reg_loss 0.23 (0.32)
+Epoch: [000][00390/00624]	Time 0.14 (0.16)	Loss 0.53 (0.61)
+		cls_loss 0.31 (0.30)	reg_loss 0.22 (0.31)
+Epoch: [000][00400/00624]	Time 0.14 (0.16)	Loss 0.48 (0.61)
+		cls_loss 0.27 (0.30)	reg_loss 0.20 (0.31)
+Epoch: [000][00410/00624]	Time 0.14 (0.16)	Loss 0.51 (0.61)
+		cls_loss 0.27 (0.30)	reg_loss 0.24 (0.31)
+Epoch: [000][00420/00624]	Time 0.14 (0.16)	Loss 0.41 (0.60)
+		cls_loss 0.24 (0.29)	reg_loss 0.16 (0.31)
+Epoch: [000][00430/00624]	Time 0.14 (0.16)	Loss 0.40 (0.60)
+		cls_loss 0.24 (0.29)	reg_loss 0.16 (0.30)
+Epoch: [000][00440/00624]	Time 0.14 (0.16)	Loss 0.52 (0.59)
+		cls_loss 0.29 (0.29)	reg_loss 0.23 (0.30)
+Epoch: [000][00450/00624]	Time 0.14 (0.16)	Loss 0.50 (0.59)
+		cls_loss 0.30 (0.29)	reg_loss 0.20 (0.30)
+Epoch: [000][00460/00624]	Time 0.14 (0.16)	Loss 0.80 (0.60)
+		cls_loss 0.45 (0.30)	reg_loss 0.35 (0.30)
+Epoch: [000][00470/00624]	Time 0.14 (0.16)	Loss 0.39 (0.59)
+		cls_loss 0.24 (0.30)	reg_loss 0.15 (0.30)
+Epoch: [000][00480/00624]	Time 0.14 (0.16)	Loss 0.73 (0.60)
+		cls_loss 0.38 (0.30)	reg_loss 0.36 (0.30)
+Epoch: [000][00490/00624]	Time 0.14 (0.16)	Loss 0.60 (0.60)
+		cls_loss 0.37 (0.30)	reg_loss 0.24 (0.30)
+Epoch: [000][00500/00624]	Time 0.14 (0.16)	Loss 0.61 (0.60)
+		cls_loss 0.36 (0.30)	reg_loss 0.25 (0.30)
+Epoch: [000][00510/00624]	Time 0.14 (0.16)	Loss 0.48 (0.59)
+		cls_loss 0.28 (0.30)	reg_loss 0.21 (0.29)
+Epoch: [000][00520/00624]	Time 0.14 (0.16)	Loss 0.50 (0.59)
+		cls_loss 0.31 (0.30)	reg_loss 0.20 (0.29)
+Epoch: [000][00530/00624]	Time 0.14 (0.16)	Loss 0.37 (0.59)
+		cls_loss 0.22 (0.30)	reg_loss 0.15 (0.29)
+Epoch: [000][00540/00624]	Time 0.14 (0.16)	Loss 0.50 (0.59)
+		cls_loss 0.28 (0.30)	reg_loss 0.22 (0.29)
+Epoch: [000][00550/00624]	Time 0.14 (0.16)	Loss 0.58 (0.59)
+		cls_loss 0.33 (0.30)	reg_loss 0.26 (0.29)
+Epoch: [000][00560/00624]	Time 0.14 (0.16)	Loss 0.43 (0.58)
+		cls_loss 0.24 (0.30)	reg_loss 0.19 (0.29)
+Epoch: [000][00570/00624]	Time 0.14 (0.16)	Loss 0.71 (0.59)
+		cls_loss 0.41 (0.30)	reg_loss 0.30 (0.29)
+Epoch: [000][00580/00624]	Time 0.14 (0.16)	Loss 0.65 (0.59)
+		cls_loss 0.31 (0.30)	reg_loss 0.34 (0.29)
+Epoch: [000][00590/00624]	Time 0.14 (0.16)	Loss 0.52 (0.59)
+		cls_loss 0.30 (0.30)	reg_loss 0.22 (0.29)
+Epoch: [000][00600/00624]	Time 0.14 (0.15)	Loss 0.39 (0.58)
+		cls_loss 0.23 (0.30)	reg_loss 0.15 (0.28)
+Epoch: [000][00610/00624]	Time 0.14 (0.15)	Loss 0.52 (0.58)
+		cls_loss 0.28 (0.30)	reg_loss 0.24 (0.28)
+Epoch: [000][00620/00624]	Time 0.14 (0.15)	Loss 0.26 (0.58)
+		cls_loss 0.18 (0.30)	reg_loss 0.09 (0.28)
+[Train]: Epoch 0 finished with lr=0.00010002
+
+
+[Train]: Epoch 1 started
+Epoch: [001][00010/00624]	Time 0.16 (0.16)	Loss 0.49 (0.49)
+		cls_loss 0.29 (0.29)	reg_loss 0.20 (0.20)
+Epoch: [001][00020/00624]	Time 0.14 (0.15)	Loss 0.56 (0.53)
+		cls_loss 0.31 (0.30)	reg_loss 0.25 (0.23)
+Epoch: [001][00030/00624]	Time 0.14 (0.15)	Loss 0.56 (0.54)
+		cls_loss 0.31 (0.30)	reg_loss 0.25 (0.23)
+Epoch: [001][00040/00624]	Time 0.14 (0.15)	Loss 0.53 (0.54)
+		cls_loss 0.29 (0.30)	reg_loss 0.24 (0.24)
+Epoch: [001][00050/00624]	Time 0.14 (0.15)	Loss 0.32 (0.49)
+		cls_loss 0.18 (0.28)	reg_loss 0.14 (0.22)
+Epoch: [001][00060/00624]	Time 0.14 (0.15)	Loss 0.43 (0.48)
+		cls_loss 0.25 (0.27)	reg_loss 0.18 (0.21)
+Epoch: [001][00070/00624]	Time 0.14 (0.15)	Loss 0.52 (0.49)
+		cls_loss 0.29 (0.27)	reg_loss 0.23 (0.21)
+Epoch: [001][00080/00624]	Time 0.14 (0.15)	Loss 0.48 (0.49)
+		cls_loss 0.27 (0.27)	reg_loss 0.21 (0.21)
+Epoch: [001][00090/00624]	Time 0.14 (0.14)	Loss 0.45 (0.48)
+		cls_loss 0.28 (0.27)	reg_loss 0.17 (0.21)
+Epoch: [001][00100/00624]	Time 0.14 (0.14)	Loss 0.47 (0.48)
+		cls_loss 0.29 (0.28)	reg_loss 0.18 (0.21)
+Epoch: [001][00110/00624]	Time 0.14 (0.14)	Loss 0.76 (0.51)
+		cls_loss 0.45 (0.29)	reg_loss 0.32 (0.22)
+Epoch: [001][00120/00624]	Time 0.14 (0.14)	Loss 0.55 (0.51)
+		cls_loss 0.30 (0.29)	reg_loss 0.25 (0.22)
+Epoch: [001][00130/00624]	Time 0.14 (0.14)	Loss 0.46 (0.51)
+		cls_loss 0.26 (0.29)	reg_loss 0.20 (0.22)
+Epoch: [001][00140/00624]	Time 0.14 (0.14)	Loss 0.42 (0.50)
+		cls_loss 0.23 (0.29)	reg_loss 0.20 (0.22)
+Epoch: [001][00150/00624]	Time 0.14 (0.14)	Loss 0.62 (0.51)
+		cls_loss 0.33 (0.29)	reg_loss 0.29 (0.22)
+Epoch: [001][00160/00624]	Time 0.14 (0.14)	Loss 0.50 (0.51)
+		cls_loss 0.29 (0.29)	reg_loss 0.22 (0.22)
+Epoch: [001][00170/00624]	Time 0.14 (0.14)	Loss 0.45 (0.51)
+		cls_loss 0.25 (0.29)	reg_loss 0.20 (0.22)
+Epoch: [001][00180/00624]	Time 0.14 (0.14)	Loss 0.50 (0.51)
+		cls_loss 0.31 (0.29)	reg_loss 0.19 (0.22)
+Epoch: [001][00190/00624]	Time 0.14 (0.14)	Loss 0.75 (0.52)
+		cls_loss 0.43 (0.29)	reg_loss 0.33 (0.22)
+Epoch: [001][00200/00624]	Time 0.14 (0.14)	Loss 0.34 (0.51)
+		cls_loss 0.21 (0.29)	reg_loss 0.14 (0.22)
+Epoch: [001][00210/00624]	Time 0.14 (0.14)	Loss 0.38 (0.50)
+		cls_loss 0.22 (0.29)	reg_loss 0.16 (0.22)
+Epoch: [001][00220/00624]	Time 0.14 (0.14)	Loss 0.43 (0.50)
+		cls_loss 0.24 (0.28)	reg_loss 0.19 (0.22)
+Epoch: [001][00230/00624]	Time 0.14 (0.14)	Loss 0.80 (0.51)
+		cls_loss 0.43 (0.29)	reg_loss 0.37 (0.22)
+Epoch: [001][00240/00624]	Time 0.14 (0.14)	Loss 0.39 (0.51)
+		cls_loss 0.24 (0.29)	reg_loss 0.16 (0.22)
+Epoch: [001][00250/00624]	Time 0.14 (0.14)	Loss 0.45 (0.51)
+		cls_loss 0.25 (0.29)	reg_loss 0.20 (0.22)
+Epoch: [001][00260/00624]	Time 0.14 (0.14)	Loss 0.26 (0.50)
+		cls_loss 0.18 (0.28)	reg_loss 0.09 (0.21)
+Epoch: [001][00270/00624]	Time 0.14 (0.14)	Loss 0.52 (0.50)
+		cls_loss 0.32 (0.28)	reg_loss 0.21 (0.21)
+Epoch: [001][00280/00624]	Time 0.14 (0.14)	Loss 0.50 (0.50)
+		cls_loss 0.31 (0.28)	reg_loss 0.19 (0.21)
+Epoch: [001][00290/00624]	Time 0.14 (0.14)	Loss 0.48 (0.50)
+		cls_loss 0.27 (0.28)	reg_loss 0.21 (0.21)
+Epoch: [001][00300/00624]	Time 0.14 (0.14)	Loss 0.34 (0.49)
+		cls_loss 0.22 (0.28)	reg_loss 0.12 (0.21)
+Epoch: [001][00310/00624]	Time 0.14 (0.14)	Loss 0.42 (0.49)
+		cls_loss 0.25 (0.28)	reg_loss 0.17 (0.21)
+Epoch: [001][00320/00624]	Time 0.14 (0.14)	Loss 0.43 (0.49)
+		cls_loss 0.24 (0.28)	reg_loss 0.19 (0.21)
+Epoch: [001][00330/00624]	Time 0.14 (0.14)	Loss 0.38 (0.48)
+		cls_loss 0.22 (0.28)	reg_loss 0.16 (0.21)
+Epoch: [001][00340/00624]	Time 0.14 (0.14)	Loss 0.51 (0.49)
+		cls_loss 0.28 (0.28)	reg_loss 0.23 (0.21)
+Epoch: [001][00350/00624]	Time 0.14 (0.14)	Loss 0.63 (0.49)
+		cls_loss 0.33 (0.28)	reg_loss 0.31 (0.21)
+Epoch: [001][00360/00624]	Time 0.14 (0.14)	Loss 0.50 (0.49)
+		cls_loss 0.28 (0.28)	reg_loss 0.22 (0.21)
+Epoch: [001][00370/00624]	Time 0.14 (0.14)	Loss 0.77 (0.50)
+		cls_loss 0.42 (0.28)	reg_loss 0.35 (0.21)
+Epoch: [001][00380/00624]	Time 0.14 (0.14)	Loss 0.47 (0.50)
+		cls_loss 0.25 (0.28)	reg_loss 0.22 (0.21)
+Epoch: [001][00390/00624]	Time 0.14 (0.14)	Loss 0.66 (0.50)
+		cls_loss 0.35 (0.28)	reg_loss 0.31 (0.22)
+Epoch: [001][00400/00624]	Time 0.14 (0.14)	Loss 0.35 (0.50)
+		cls_loss 0.22 (0.28)	reg_loss 0.13 (0.21)
+Epoch: [001][00410/00624]	Time 0.14 (0.14)	Loss 0.75 (0.50)
+		cls_loss 0.40 (0.29)	reg_loss 0.35 (0.22)
+Epoch: [001][00420/00624]	Time 0.14 (0.14)	Loss 0.29 (0.50)
+		cls_loss 0.19 (0.28)	reg_loss 0.10 (0.22)
+Epoch: [001][00430/00624]	Time 0.14 (0.14)	Loss 0.45 (0.50)
+		cls_loss 0.28 (0.28)	reg_loss 0.17 (0.21)
+Epoch: [001][00440/00624]	Time 0.14 (0.14)	Loss 0.61 (0.50)
+		cls_loss 0.34 (0.28)	reg_loss 0.27 (0.22)
+Epoch: [001][00450/00624]	Time 0.14 (0.14)	Loss 0.31 (0.50)
+		cls_loss 0.19 (0.28)	reg_loss 0.13 (0.21)
+Epoch: [001][00460/00624]	Time 0.14 (0.14)	Loss 0.58 (0.50)
+		cls_loss 0.29 (0.28)	reg_loss 0.29 (0.22)
+Epoch: [001][00470/00624]	Time 0.14 (0.14)	Loss 0.31 (0.49)
+		cls_loss 0.20 (0.28)	reg_loss 0.12 (0.21)
+Epoch: [001][00480/00624]	Time 0.14 (0.14)	Loss 0.43 (0.49)
+		cls_loss 0.22 (0.28)	reg_loss 0.21 (0.21)
+Epoch: [001][00490/00624]	Time 0.14 (0.14)	Loss 0.58 (0.49)
+		cls_loss 0.35 (0.28)	reg_loss 0.23 (0.21)
+Epoch: [001][00500/00624]	Time 0.14 (0.14)	Loss 0.41 (0.49)
+		cls_loss 0.22 (0.28)	reg_loss 0.19 (0.21)
+Epoch: [001][00510/00624]	Time 0.14 (0.14)	Loss 0.51 (0.49)
+		cls_loss 0.28 (0.28)	reg_loss 0.23 (0.21)
+Epoch: [001][00520/00624]	Time 0.14 (0.14)	Loss 0.34 (0.49)
+		cls_loss 0.20 (0.28)	reg_loss 0.14 (0.21)
+Epoch: [001][00530/00624]	Time 0.14 (0.14)	Loss 0.47 (0.49)
+		cls_loss 0.28 (0.28)	reg_loss 0.19 (0.21)
+Epoch: [001][00540/00624]	Time 0.14 (0.14)	Loss 0.69 (0.49)
+		cls_loss 0.42 (0.28)	reg_loss 0.27 (0.21)
+Epoch: [001][00550/00624]	Time 0.14 (0.14)	Loss 0.90 (0.50)
+		cls_loss 0.50 (0.28)	reg_loss 0.40 (0.22)
+Epoch: [001][00560/00624]	Time 0.14 (0.14)	Loss 0.78 (0.51)
+		cls_loss 0.44 (0.29)	reg_loss 0.33 (0.22)
+Epoch: [001][00570/00624]	Time 0.14 (0.14)	Loss 0.39 (0.50)
+		cls_loss 0.22 (0.29)	reg_loss 0.17 (0.22)
+Epoch: [001][00580/00624]	Time 0.14 (0.14)	Loss 0.28 (0.50)
+		cls_loss 0.19 (0.28)	reg_loss 0.09 (0.21)
+Epoch: [001][00590/00624]	Time 0.14 (0.14)	Loss 0.33 (0.50)
+		cls_loss 0.22 (0.28)	reg_loss 0.12 (0.21)
+Epoch: [001][00600/00624]	Time 0.14 (0.14)	Loss 0.53 (0.50)
+		cls_loss 0.31 (0.28)	reg_loss 0.22 (0.21)
+Epoch: [001][00610/00624]	Time 0.14 (0.14)	Loss 0.66 (0.50)
+		cls_loss 0.38 (0.29)	reg_loss 0.29 (0.21)
+Epoch: [001][00620/00624]	Time 0.14 (0.14)	Loss 0.57 (0.50)
+		cls_loss 0.32 (0.29)	reg_loss 0.25 (0.22)
+[Train]: Epoch 1 finished with lr=0.00020003
+
+
+[Train]: Epoch 2 started
+Epoch: [002][00010/00624]	Time 0.16 (0.16)	Loss 0.42 (0.42)
+		cls_loss 0.24 (0.24)	reg_loss 0.18 (0.18)
+Epoch: [002][00020/00624]	Time 0.14 (0.15)	Loss 0.45 (0.43)
+		cls_loss 0.25 (0.25)	reg_loss 0.19 (0.19)
+Epoch: [002][00030/00624]	Time 0.14 (0.15)	Loss 0.61 (0.49)
+		cls_loss 0.34 (0.28)	reg_loss 0.27 (0.22)
+Epoch: [002][00040/00624]	Time 0.14 (0.15)	Loss 0.53 (0.50)
+		cls_loss 0.29 (0.28)	reg_loss 0.24 (0.22)
+Epoch: [002][00050/00624]	Time 0.14 (0.15)	Loss 0.45 (0.49)
+		cls_loss 0.26 (0.28)	reg_loss 0.18 (0.21)
+Epoch: [002][00060/00624]	Time 0.14 (0.15)	Loss 0.29 (0.46)
+		cls_loss 0.18 (0.26)	reg_loss 0.11 (0.20)
+Epoch: [002][00070/00624]	Time 0.14 (0.15)	Loss 0.30 (0.44)
+		cls_loss 0.17 (0.25)	reg_loss 0.13 (0.19)
+Epoch: [002][00080/00624]	Time 0.14 (0.14)	Loss 1.05 (0.51)
+		cls_loss 0.63 (0.30)	reg_loss 0.41 (0.22)
+Epoch: [002][00090/00624]	Time 0.14 (0.14)	Loss 0.42 (0.50)
+		cls_loss 0.23 (0.29)	reg_loss 0.19 (0.21)
+Epoch: [002][00100/00624]	Time 0.14 (0.14)	Loss 0.56 (0.51)
+		cls_loss 0.32 (0.29)	reg_loss 0.24 (0.22)
+Epoch: [002][00110/00624]	Time 0.14 (0.14)	Loss 0.41 (0.50)
+		cls_loss 0.24 (0.29)	reg_loss 0.18 (0.21)
+Epoch: [002][00120/00624]	Time 0.14 (0.14)	Loss 0.50 (0.50)
+		cls_loss 0.29 (0.29)	reg_loss 0.21 (0.21)
+Epoch: [002][00130/00624]	Time 0.14 (0.14)	Loss 0.56 (0.50)
+		cls_loss 0.32 (0.29)	reg_loss 0.24 (0.21)
+Epoch: [002][00140/00624]	Time 0.14 (0.14)	Loss 0.35 (0.49)
+		cls_loss 0.19 (0.28)	reg_loss 0.16 (0.21)
+Epoch: [002][00150/00624]	Time 0.14 (0.14)	Loss 0.48 (0.49)
+		cls_loss 0.26 (0.28)	reg_loss 0.22 (0.21)
+Epoch: [002][00160/00624]	Time 0.14 (0.14)	Loss 0.68 (0.50)
+		cls_loss 0.36 (0.29)	reg_loss 0.32 (0.22)
+Epoch: [002][00170/00624]	Time 0.14 (0.14)	Loss 0.52 (0.50)
+		cls_loss 0.27 (0.29)	reg_loss 0.25 (0.22)
+Epoch: [002][00180/00624]	Time 0.14 (0.14)	Loss 0.41 (0.50)
+		cls_loss 0.23 (0.28)	reg_loss 0.17 (0.22)
+Epoch: [002][00190/00624]	Time 0.14 (0.14)	Loss 0.41 (0.49)
+		cls_loss 0.23 (0.28)	reg_loss 0.19 (0.21)
+Epoch: [002][00200/00624]	Time 0.14 (0.14)	Loss 0.35 (0.49)
+		cls_loss 0.19 (0.28)	reg_loss 0.16 (0.21)
+Epoch: [002][00210/00624]	Time 0.14 (0.14)	Loss 0.46 (0.49)
+		cls_loss 0.27 (0.27)	reg_loss 0.19 (0.21)
+Epoch: [002][00220/00624]	Time 0.14 (0.14)	Loss 0.86 (0.50)
+		cls_loss 0.48 (0.28)	reg_loss 0.38 (0.22)
+Epoch: [002][00230/00624]	Time 0.14 (0.14)	Loss 0.51 (0.50)
+		cls_loss 0.31 (0.29)	reg_loss 0.20 (0.22)
+Epoch: [002][00240/00624]	Time 0.14 (0.14)	Loss 0.50 (0.50)
+		cls_loss 0.30 (0.29)	reg_loss 0.20 (0.22)
+Epoch: [002][00250/00624]	Time 0.14 (0.14)	Loss 0.35 (0.50)
+		cls_loss 0.23 (0.28)	reg_loss 0.13 (0.21)
+Epoch: [002][00260/00624]	Time 0.14 (0.14)	Loss 0.38 (0.49)
+		cls_loss 0.22 (0.28)	reg_loss 0.16 (0.21)
+Epoch: [002][00270/00624]	Time 0.14 (0.14)	Loss 0.61 (0.50)
+		cls_loss 0.30 (0.28)	reg_loss 0.32 (0.22)
+Epoch: [002][00280/00624]	Time 0.14 (0.14)	Loss 0.49 (0.50)
+		cls_loss 0.28 (0.28)	reg_loss 0.21 (0.22)
+Epoch: [002][00290/00624]	Time 0.14 (0.14)	Loss 0.53 (0.50)
+		cls_loss 0.31 (0.28)	reg_loss 0.21 (0.22)
+Epoch: [002][00300/00624]	Time 0.14 (0.14)	Loss 0.47 (0.50)
+		cls_loss 0.24 (0.28)	reg_loss 0.23 (0.22)
+Epoch: [002][00310/00624]	Time 0.14 (0.14)	Loss 0.40 (0.49)
+		cls_loss 0.24 (0.28)	reg_loss 0.16 (0.21)
+Epoch: [002][00320/00624]	Time 0.14 (0.14)	Loss 0.37 (0.49)
+		cls_loss 0.22 (0.28)	reg_loss 0.14 (0.21)
+Epoch: [002][00330/00624]	Time 0.14 (0.14)	Loss 0.78 (0.50)
+		cls_loss 0.40 (0.28)	reg_loss 0.39 (0.22)
+Epoch: [002][00340/00624]	Time 0.14 (0.14)	Loss 0.55 (0.50)
+		cls_loss 0.34 (0.28)	reg_loss 0.21 (0.22)
+Epoch: [002][00350/00624]	Time 0.14 (0.14)	Loss 0.42 (0.50)
+		cls_loss 0.26 (0.28)	reg_loss 0.16 (0.22)
+Epoch: [002][00360/00624]	Time 0.14 (0.14)	Loss 0.42 (0.50)
+		cls_loss 0.26 (0.28)	reg_loss 0.16 (0.21)
+Epoch: [002][00370/00624]	Time 0.14 (0.14)	Loss 0.57 (0.50)
+		cls_loss 0.31 (0.28)	reg_loss 0.25 (0.21)
+Epoch: [002][00380/00624]	Time 0.14 (0.14)	Loss 0.50 (0.50)
+		cls_loss 0.28 (0.28)	reg_loss 0.22 (0.21)
+Epoch: [002][00390/00624]	Time 0.14 (0.14)	Loss 0.37 (0.49)
+		cls_loss 0.23 (0.28)	reg_loss 0.14 (0.21)
+Epoch: [002][00400/00624]	Time 0.14 (0.14)	Loss 0.41 (0.49)
+		cls_loss 0.25 (0.28)	reg_loss 0.16 (0.21)
+Epoch: [002][00410/00624]	Time 0.14 (0.14)	Loss 0.36 (0.49)
+		cls_loss 0.20 (0.28)	reg_loss 0.16 (0.21)
+Epoch: [002][00420/00624]	Time 0.14 (0.14)	Loss 0.48 (0.49)
+		cls_loss 0.30 (0.28)	reg_loss 0.17 (0.21)
+Epoch: [002][00430/00624]	Time 0.14 (0.14)	Loss 0.37 (0.49)
+		cls_loss 0.22 (0.28)	reg_loss 0.14 (0.21)
+Epoch: [002][00440/00624]	Time 0.14 (0.14)	Loss 0.43 (0.49)
+		cls_loss 0.27 (0.28)	reg_loss 0.16 (0.21)
+Epoch: [002][00450/00624]	Time 0.14 (0.14)	Loss 0.35 (0.48)
+		cls_loss 0.22 (0.28)	reg_loss 0.14 (0.21)
+Epoch: [002][00460/00624]	Time 0.14 (0.14)	Loss 0.32 (0.48)
+		cls_loss 0.19 (0.27)	reg_loss 0.13 (0.20)
+Epoch: [002][00470/00624]	Time 0.14 (0.14)	Loss 0.22 (0.47)
+		cls_loss 0.14 (0.27)	reg_loss 0.09 (0.20)
+Epoch: [002][00480/00624]	Time 0.14 (0.14)	Loss 0.74 (0.48)
+		cls_loss 0.45 (0.28)	reg_loss 0.29 (0.20)
+Epoch: [002][00490/00624]	Time 0.14 (0.14)	Loss 0.39 (0.48)
+		cls_loss 0.22 (0.27)	reg_loss 0.17 (0.20)
+Epoch: [002][00500/00624]	Time 0.14 (0.14)	Loss 0.46 (0.48)
+		cls_loss 0.29 (0.27)	reg_loss 0.17 (0.20)
+Epoch: [002][00510/00624]	Time 0.14 (0.14)	Loss 0.63 (0.48)
+		cls_loss 0.37 (0.28)	reg_loss 0.26 (0.20)
+Epoch: [002][00520/00624]	Time 0.14 (0.14)	Loss 0.50 (0.48)
+		cls_loss 0.29 (0.28)	reg_loss 0.21 (0.20)
+Epoch: [002][00530/00624]	Time 0.14 (0.14)	Loss 0.55 (0.48)
+		cls_loss 0.34 (0.28)	reg_loss 0.21 (0.20)
+Epoch: [002][00540/00624]	Time 0.14 (0.14)	Loss 0.42 (0.48)
+		cls_loss 0.24 (0.28)	reg_loss 0.18 (0.20)
+Epoch: [002][00550/00624]	Time 0.14 (0.14)	Loss 0.28 (0.48)
+		cls_loss 0.18 (0.28)	reg_loss 0.10 (0.20)
+Epoch: [002][00560/00624]	Time 0.14 (0.14)	Loss 0.50 (0.48)
+		cls_loss 0.30 (0.28)	reg_loss 0.20 (0.20)
+Epoch: [002][00570/00624]	Time 0.14 (0.14)	Loss 0.75 (0.48)
+		cls_loss 0.41 (0.28)	reg_loss 0.34 (0.20)
+Epoch: [002][00580/00624]	Time 0.14 (0.14)	Loss 0.50 (0.48)
+		cls_loss 0.31 (0.28)	reg_loss 0.19 (0.20)
+Epoch: [002][00590/00624]	Time 0.14 (0.14)	Loss 0.40 (0.48)
+		cls_loss 0.22 (0.28)	reg_loss 0.18 (0.20)
+Epoch: [002][00600/00624]	Time 0.14 (0.14)	Loss 0.58 (0.48)
+		cls_loss 0.34 (0.28)	reg_loss 0.24 (0.20)
+Epoch: [002][00610/00624]	Time 0.14 (0.14)	Loss 0.28 (0.48)
+		cls_loss 0.18 (0.28)	reg_loss 0.10 (0.20)
+Epoch: [002][00620/00624]	Time 0.14 (0.14)	Loss 0.35 (0.48)
+		cls_loss 0.20 (0.28)	reg_loss 0.15 (0.20)
+[Train]: Epoch 2 finished with lr=0.00030005
+
+
+[Train]: Epoch 3 started
+Epoch: [003][00010/00624]	Time 0.16 (0.16)	Loss 0.44 (0.44)
+		cls_loss 0.27 (0.27)	reg_loss 0.17 (0.17)
+Epoch: [003][00020/00624]	Time 0.14 (0.15)	Loss 0.49 (0.46)
+		cls_loss 0.30 (0.28)	reg_loss 0.19 (0.18)
+Epoch: [003][00030/00624]	Time 0.14 (0.15)	Loss 0.51 (0.48)
+		cls_loss 0.26 (0.27)	reg_loss 0.25 (0.21)
+Epoch: [003][00040/00624]	Time 0.14 (0.15)	Loss 0.75 (0.55)
+		cls_loss 0.47 (0.32)	reg_loss 0.29 (0.23)
+Epoch: [003][00050/00624]	Time 0.14 (0.15)	Loss 0.34 (0.51)
+		cls_loss 0.20 (0.30)	reg_loss 0.15 (0.21)
+Epoch: [003][00060/00624]	Time 0.14 (0.15)	Loss 0.54 (0.51)
+		cls_loss 0.30 (0.30)	reg_loss 0.24 (0.21)
+Epoch: [003][00070/00624]	Time 0.14 (0.15)	Loss 0.27 (0.48)
+		cls_loss 0.15 (0.28)	reg_loss 0.12 (0.20)
+Epoch: [003][00080/00624]	Time 0.14 (0.15)	Loss 0.49 (0.48)
+		cls_loss 0.31 (0.28)	reg_loss 0.19 (0.20)
+Epoch: [003][00090/00624]	Time 0.14 (0.14)	Loss 0.49 (0.48)
+		cls_loss 0.28 (0.28)	reg_loss 0.21 (0.20)
+Epoch: [003][00100/00624]	Time 0.14 (0.14)	Loss 0.51 (0.48)
+		cls_loss 0.30 (0.28)	reg_loss 0.21 (0.20)
+Epoch: [003][00110/00624]	Time 0.14 (0.14)	Loss 0.90 (0.52)
+		cls_loss 0.52 (0.30)	reg_loss 0.38 (0.22)
+Epoch: [003][00120/00624]	Time 0.14 (0.14)	Loss 0.45 (0.52)
+		cls_loss 0.27 (0.30)	reg_loss 0.18 (0.21)
+Epoch: [003][00130/00624]	Time 0.14 (0.14)	Loss 0.44 (0.51)
+		cls_loss 0.25 (0.30)	reg_loss 0.19 (0.21)
+Epoch: [003][00140/00624]	Time 0.14 (0.14)	Loss 0.36 (0.50)
+		cls_loss 0.20 (0.29)	reg_loss 0.16 (0.21)
+Epoch: [003][00150/00624]	Time 0.14 (0.14)	Loss 0.32 (0.49)
+		cls_loss 0.18 (0.28)	reg_loss 0.14 (0.20)
+Epoch: [003][00160/00624]	Time 0.14 (0.14)	Loss 0.61 (0.49)
+		cls_loss 0.31 (0.29)	reg_loss 0.30 (0.21)
+Epoch: [003][00170/00624]	Time 0.14 (0.14)	Loss 0.42 (0.49)
+		cls_loss 0.27 (0.28)	reg_loss 0.16 (0.21)
+Epoch: [003][00180/00624]	Time 0.14 (0.14)	Loss 0.86 (0.51)
+		cls_loss 0.47 (0.29)	reg_loss 0.39 (0.22)
+Epoch: [003][00190/00624]	Time 0.14 (0.14)	Loss 0.46 (0.51)
+		cls_loss 0.24 (0.29)	reg_loss 0.22 (0.22)
+Epoch: [003][00200/00624]	Time 0.14 (0.14)	Loss 0.59 (0.51)
+		cls_loss 0.33 (0.29)	reg_loss 0.26 (0.22)
+Epoch: [003][00210/00624]	Time 0.14 (0.14)	Loss 0.62 (0.52)
+		cls_loss 0.32 (0.30)	reg_loss 0.29 (0.22)
+Epoch: [003][00220/00624]	Time 0.14 (0.14)	Loss 0.26 (0.51)
+		cls_loss 0.17 (0.29)	reg_loss 0.09 (0.22)
+Epoch: [003][00230/00624]	Time 0.14 (0.14)	Loss 0.41 (0.50)
+		cls_loss 0.26 (0.29)	reg_loss 0.15 (0.21)
+Epoch: [003][00240/00624]	Time 0.14 (0.14)	Loss 0.53 (0.50)
+		cls_loss 0.31 (0.29)	reg_loss 0.22 (0.21)
+Epoch: [003][00250/00624]	Time 0.14 (0.14)	Loss 0.44 (0.50)
+		cls_loss 0.24 (0.29)	reg_loss 0.19 (0.21)
+Epoch: [003][00260/00624]	Time 0.14 (0.14)	Loss 0.56 (0.50)
+		cls_loss 0.32 (0.29)	reg_loss 0.25 (0.21)
+Epoch: [003][00270/00624]	Time 0.14 (0.14)	Loss 0.40 (0.50)
+		cls_loss 0.23 (0.29)	reg_loss 0.17 (0.21)
+Epoch: [003][00280/00624]	Time 0.14 (0.14)	Loss 0.52 (0.50)
+		cls_loss 0.28 (0.29)	reg_loss 0.24 (0.21)
+Epoch: [003][00290/00624]	Time 0.14 (0.14)	Loss 0.72 (0.51)
+		cls_loss 0.40 (0.29)	reg_loss 0.32 (0.22)
+Epoch: [003][00300/00624]	Time 0.14 (0.14)	Loss 0.63 (0.51)
+		cls_loss 0.33 (0.29)	reg_loss 0.30 (0.22)
+Epoch: [003][00310/00624]	Time 0.14 (0.14)	Loss 0.56 (0.51)
+		cls_loss 0.35 (0.29)	reg_loss 0.22 (0.22)
+Epoch: [003][00320/00624]	Time 0.14 (0.14)	Loss 0.38 (0.51)
+		cls_loss 0.21 (0.29)	reg_loss 0.17 (0.22)
+Epoch: [003][00330/00624]	Time 0.14 (0.14)	Loss 0.35 (0.50)
+		cls_loss 0.22 (0.29)	reg_loss 0.13 (0.22)
+Epoch: [003][00340/00624]	Time 0.14 (0.14)	Loss 0.28 (0.50)
+		cls_loss 0.18 (0.29)	reg_loss 0.09 (0.21)
+Epoch: [003][00350/00624]	Time 0.14 (0.14)	Loss 0.50 (0.50)
+		cls_loss 0.28 (0.29)	reg_loss 0.21 (0.21)
+Epoch: [003][00360/00624]	Time 0.14 (0.14)	Loss 0.62 (0.50)
+		cls_loss 0.33 (0.29)	reg_loss 0.29 (0.21)
+Epoch: [003][00370/00624]	Time 0.14 (0.14)	Loss 0.39 (0.50)
+		cls_loss 0.23 (0.28)	reg_loss 0.16 (0.21)
+Epoch: [003][00380/00624]	Time 0.14 (0.14)	Loss 0.50 (0.50)
+		cls_loss 0.28 (0.28)	reg_loss 0.22 (0.21)
+Epoch: [003][00390/00624]	Time 0.14 (0.14)	Loss 0.23 (0.49)
+		cls_loss 0.15 (0.28)	reg_loss 0.08 (0.21)
+Epoch: [003][00400/00624]	Time 0.14 (0.14)	Loss 0.53 (0.49)
+		cls_loss 0.26 (0.28)	reg_loss 0.27 (0.21)
+Epoch: [003][00410/00624]	Time 0.14 (0.14)	Loss 0.58 (0.49)
+		cls_loss 0.33 (0.28)	reg_loss 0.25 (0.21)
+Epoch: [003][00420/00624]	Time 0.14 (0.14)	Loss 0.37 (0.49)
+		cls_loss 0.22 (0.28)	reg_loss 0.15 (0.21)
+Epoch: [003][00430/00624]	Time 0.14 (0.14)	Loss 0.47 (0.49)
+		cls_loss 0.29 (0.28)	reg_loss 0.18 (0.21)
+Epoch: [003][00440/00624]	Time 0.14 (0.14)	Loss 0.45 (0.49)
+		cls_loss 0.26 (0.28)	reg_loss 0.20 (0.21)
+Epoch: [003][00450/00624]	Time 0.14 (0.14)	Loss 0.52 (0.49)
+		cls_loss 0.30 (0.28)	reg_loss 0.21 (0.21)
+Epoch: [003][00460/00624]	Time 0.14 (0.14)	Loss 0.48 (0.49)
+		cls_loss 0.28 (0.28)	reg_loss 0.21 (0.21)
+Epoch: [003][00470/00624]	Time 0.14 (0.14)	Loss 0.52 (0.49)
+		cls_loss 0.32 (0.28)	reg_loss 0.21 (0.21)
+Epoch: [003][00480/00624]	Time 0.14 (0.14)	Loss 0.32 (0.49)
+		cls_loss 0.18 (0.28)	reg_loss 0.14 (0.21)

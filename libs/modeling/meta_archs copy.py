@@ -205,12 +205,10 @@ class TriDet(nn.Module):
             init_conv_vars,  # initialization of gaussian variance for the weight in SGP
             use_trident_head,  # if use the Trident-head
             num_classes,  # number of action classes
-            cloformer_kersizes, # the kernel size for cloformer
             train_cfg,  # other cfg for training
             test_cfg  # other cfg for testing
     ):
         super().__init__()
-        self.cloformer_kersizes = cloformer_kersizes
         # re-distribute params to backbone / neck / head
         self.fpn_strides = [scale_factor ** i for i in range(backbone_arch[-1] + 1)]
 
@@ -265,7 +263,7 @@ class TriDet(nn.Module):
 
         # we will need a better way to dispatch the params to backbones / necks
         # backbone network: conv + transformer
-        assert backbone_type in ['SGP', 'conv', 'SGP_clo']
+        assert backbone_type in ['SGP', 'conv']
         if backbone_type == 'SGP':
             self.backbone = make_backbone(
                 'SGP',
@@ -284,27 +282,6 @@ class TriDet(nn.Module):
                     'use_abs_pe': use_abs_pe,
                     'k': k,
                     'init_conv_vars': init_conv_vars
-                }
-            )
-        elif backbone_type == 'SGP_clo':
-            self.backbone = make_backbone(
-                'SGP_clo',
-                **{
-                    'n_in': input_dim,
-                    'n_embd': embd_dim,
-                    'sgp_mlp_dim': sgp_mlp_dim,
-                    'n_embd_ks': embd_kernel_size,
-                    'max_len': max_seq_len,
-                    'arch': backbone_arch,
-                    'scale_factor': scale_factor,
-                    'with_ln': embd_with_ln,
-                    'path_pdrop': self.train_droppath,
-                    'downsample_type': downsample_type,
-                    'sgp_win_size': self.sgp_win_size,
-                    'use_abs_pe': use_abs_pe,
-                    'k': k,
-                    'init_conv_vars': init_conv_vars,
-                    'cloformer_kersizes': cloformer_kersizes
                 }
             )
         else:

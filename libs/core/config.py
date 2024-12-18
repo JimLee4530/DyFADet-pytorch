@@ -5,7 +5,7 @@ DEFAULTS = {
     "init_rand_seed": 1234567891,
     # dataset loader, specify the dataset here
     "dataset_name": "epic",
-    "devices": ['cuda:0'],  # default: single gpu
+    "devices": [0],  # default: single gpu
     "train_split": ('training',),
     "val_split": ('validation',),
     "model_name": "TriDet",
@@ -88,6 +88,7 @@ DEFAULTS = {
         "iou_weight_power": 1.,
         # add gaussian noise with the variance, play a similar role to position embedding
         "input_noise": 0,
+        "cloformer_kersizes": [1],
 
     },
     "train_cfg": {
