@@ -130,7 +130,7 @@ def main(args):
 
     best_ep = 0
     best_mAP = 0
-
+    torch.use_deterministic_algorithms(False)
     for epoch in range(args.start_epoch, max_epochs):
         # train for one epoch
         train_one_epoch(

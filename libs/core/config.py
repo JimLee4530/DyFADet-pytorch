@@ -76,6 +76,8 @@ DEFAULTS = {
         "init_conv_vars": 0,
         # add gaussian noise with the variance, play a similar role to position embedding
         "input_noise": 0,
+        "cloformer_kersizes": [1], # only used for cloformer
+        "use_transformer": False,
 
     },
     "train_cfg": {

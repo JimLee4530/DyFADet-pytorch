@@ -10,8 +10,6 @@ from ..utils import batched_nms
 
 from .heads import PtTransformerClsHead, PtTransformerRegHead, TDynPtTransformerClsHead, TDynPtTransformerRegHead
 
-from .heads_transformer import  TDynPtTransformerClsHeadv2, TDynPtTransformerRegHeadv2
-
 
 @register_meta_arch("DyFADet")
 class DyFADet(nn.Module):
@@ -50,14 +48,10 @@ class DyFADet(nn.Module):
             input_noise,  # add gaussian noise with the variance, play a similar role to position embedding
             init_conv_vars,  # initialization of gaussian variance for the weight
             num_classes,  # number of action classes
-            use_transformer, # if use transformer
-            cloformer_kersizes, # the kernel size for cloformer
             train_cfg,  # other cfg for training
             test_cfg,  # other cfg for testing
             ):
         super().__init__()
-        self.use_transformer = use_transformer
-        self.cloformer_kersizes = cloformer_kersizes
         # re-distribute params to backbone / neck / head
         self.fpn_strides = [scale_factor ** i for i in range(backbone_arch[-1] + 1)]
 
@@ -142,142 +136,6 @@ class DyFADet(nn.Module):
                     'init_conv_vars': init_conv_vars
                 }
             )
-        elif backbone_type == 'DynEv2':
-            self.backbone = make_backbone(
-                'DynEv2',
-                **{
-                    'n_in': input_dim,
-                    'n_embd': embd_dim,
-                    'mlp_dim': mlp_dim,
-                    'n_embd_ks': embd_kernel_size,
-                    'max_len': max_seq_len,
-                    'arch': backbone_arch,
-                    'scale_factor': scale_factor,
-                    'with_ln': embd_with_ln,
-                    'path_pdrop': self.train_droppath,
-                    'encoder_win_size': self.encoder_win_size,
-                    'use_abs_pe': use_abs_pe,
-                    'k': k,
-                    'init_conv_vars': init_conv_vars
-                }
-            )
-        elif backbone_type == 'DynEv3':
-            self.backbone = make_backbone(
-                'DynEv3',
-                **{
-                    'n_in': input_dim,
-                    'n_embd': embd_dim,
-                    'mlp_dim': mlp_dim,
-                    'n_embd_ks': embd_kernel_size,
-                    'max_len': max_seq_len,
-                    'arch': backbone_arch,
-                    'scale_factor': scale_factor,
-                    'with_ln': embd_with_ln,
-                    'path_pdrop': self.train_droppath,
-                    'encoder_win_size': self.encoder_win_size,
-                    'use_abs_pe': use_abs_pe,
-                    'k': k,
-                    'init_conv_vars': init_conv_vars
-                }
-            )
-        elif backbone_type == 'DynEv4':
-            self.backbone = make_backbone(
-                'DynEv4',
-                **{
-                    'n_in': input_dim,
-                    'n_embd': embd_dim,
-                    'mlp_dim': mlp_dim,
-                    'n_embd_ks': embd_kernel_size,
-                    'max_len': max_seq_len,
-                    'arch': backbone_arch,
-                    'scale_factor': scale_factor,
-                    'with_ln': embd_with_ln,
-                    'path_pdrop': self.train_droppath,
-                    'encoder_win_size': self.encoder_win_size,
-                    'use_abs_pe': use_abs_pe,
-                    'k': k,
-                    'init_conv_vars': init_conv_vars
-                }
-            )
-        elif backbone_type == 'DynEv5':
-            self.backbone = make_backbone(
-                'DynEv5',
-                **{
-                    'n_in': input_dim,
-                    'n_embd': embd_dim,
-                    'mlp_dim': mlp_dim,
-                    'n_embd_ks': embd_kernel_size,
-                    'max_len': max_seq_len,
-                    'arch': backbone_arch,
-                    'scale_factor': scale_factor,
-                    'with_ln': embd_with_ln,
-                    'path_pdrop': self.train_droppath,
-                    'encoder_win_size': self.encoder_win_size,
-                    'use_abs_pe': use_abs_pe,
-                    'k': k,
-                    'init_conv_vars': init_conv_vars,
-                    'cloformer_kersizes': cloformer_kersizes
-                }
-            )
-        elif backbone_type == 'DynEv6':
-            self.backbone = make_backbone(
-                'DynEv6',
-                **{
-                    'n_in': input_dim,
-                    'n_embd': embd_dim,
-                    'mlp_dim': mlp_dim,
-                    'n_embd_ks': embd_kernel_size,
-                    'max_len': max_seq_len,
-                    'arch': backbone_arch,
-                    'scale_factor': scale_factor,
-                    'with_ln': embd_with_ln,
-                    'path_pdrop': self.train_droppath,
-                    'encoder_win_size': self.encoder_win_size,
-                    'use_abs_pe': use_abs_pe,
-                    'k': k,
-                    'init_conv_vars': init_conv_vars,
-                    'cloformer_kersizes': cloformer_kersizes
-                }
-            )
-        elif backbone_type == 'DynEv7':
-            self.backbone = make_backbone(
-                'DynEv7',
-                **{
-                    'n_in': input_dim,
-                    'n_embd': embd_dim,
-                    'mlp_dim': mlp_dim,
-                    'n_embd_ks': embd_kernel_size,
-                    'max_len': max_seq_len,
-                    'arch': backbone_arch,
-                    'scale_factor': scale_factor,
-                    'with_ln': embd_with_ln,
-                    'path_pdrop': self.train_droppath,
-                    'encoder_win_size': self.encoder_win_size,
-                    'use_abs_pe': use_abs_pe,
-                    'k': k,
-                    'init_conv_vars': init_conv_vars,
-                    'cloformer_kersizes': cloformer_kersizes
-                }
-            )
-        elif backbone_type == 'DynE_ACA':
-            self.backbone = make_backbone(
-                'DynE_ACA',
-                **{
-                    'n_in': input_dim,
-                    'n_embd': embd_dim,
-                    'mlp_dim': mlp_dim,
-                    'n_embd_ks': embd_kernel_size,
-                    'max_len': max_seq_len,
-                    'arch': backbone_arch,
-                    'scale_factor': scale_factor,
-                    'with_ln': embd_with_ln,
-                    'path_pdrop': self.train_droppath,
-                    'encoder_win_size': self.encoder_win_size,
-                    'use_abs_pe': use_abs_pe,
-                    'k': k,
-                    'init_conv_vars': init_conv_vars
-                }
-            )
         else:
             print(backbone_type)
             raise TypeError("Unknown backbone type.")
@@ -308,36 +166,20 @@ class DyFADet(nn.Module):
         )
         
         if self.dyn_head:
-            if self.use_transformer:
-                self.cls_head = TDynPtTransformerClsHeadv2(
-                    fpn_dim, head_dim, self.num_classes,
-                    kernel_size=head_kernel_size,
-                    prior_prob=self.train_cls_prior_prob,
-                    num_layers=head_num_layers,
-                    act_layer = act_layer,
-                    empty_cls=train_cfg['head_empty_cls'],
-                    gate_activation_kargs = gate_activation_kargs)
-                
-                self.reg_head = TDynPtTransformerRegHeadv2(
-                    fpn_dim, head_dim, len(self.fpn_strides),
-                    kernel_size=head_kernel_size,
-                    num_layers=head_num_layers,
-                    gate_activation_kargs = gate_activation_kargs)
-            else:
-                self.cls_head = TDynPtTransformerClsHead(
-                    fpn_dim, head_dim, self.num_classes,
-                    kernel_size=head_kernel_size,
-                    prior_prob=self.train_cls_prior_prob,
-                    num_layers=head_num_layers,
-                    act_layer = act_layer,
-                    empty_cls=train_cfg['head_empty_cls'],
-                    gate_activation_kargs = gate_activation_kargs)
-                
-                self.reg_head = TDynPtTransformerRegHead(
-                    fpn_dim, head_dim, len(self.fpn_strides),
-                    kernel_size=head_kernel_size,
-                    num_layers=head_num_layers,
-                    gate_activation_kargs = gate_activation_kargs)
+            self.cls_head = TDynPtTransformerClsHead(
+                fpn_dim, head_dim, self.num_classes,
+                kernel_size=head_kernel_size,
+                prior_prob=self.train_cls_prior_prob,
+                num_layers=head_num_layers,
+                act_layer = act_layer,
+                empty_cls=train_cfg['head_empty_cls'],
+                gate_activation_kargs = gate_activation_kargs)
+            
+            self.reg_head = TDynPtTransformerRegHead(
+                fpn_dim, head_dim, len(self.fpn_strides),
+                kernel_size=head_kernel_size,
+                num_layers=head_num_layers,
+                gate_activation_kargs = gate_activation_kargs)
             
         else:
             self.cls_head = PtTransformerClsHead(
