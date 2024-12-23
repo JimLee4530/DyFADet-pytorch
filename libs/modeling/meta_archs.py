@@ -278,6 +278,25 @@ class DyFADet(nn.Module):
                     'init_conv_vars': init_conv_vars
                 }
             )
+        elif backbone_type == 'DynE_Skateformer':
+            self.backbone = make_backbone(
+                'DynE_Skateformer',
+                **{
+                    'n_in': input_dim,
+                    'n_embd': embd_dim,
+                    'mlp_dim': mlp_dim,
+                    'n_embd_ks': embd_kernel_size,
+                    'max_len': max_seq_len,
+                    'arch': backbone_arch,
+                    'scale_factor': scale_factor,
+                    'with_ln': embd_with_ln,
+                    'path_pdrop': self.train_droppath,
+                    'encoder_win_size': self.encoder_win_size,
+                    'use_abs_pe': use_abs_pe,
+                    'k': k,
+                    'init_conv_vars': init_conv_vars
+                }
+            )
         else:
             print(backbone_type)
             raise TypeError("Unknown backbone type.")

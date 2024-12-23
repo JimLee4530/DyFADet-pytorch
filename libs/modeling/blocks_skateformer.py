@@ -244,7 +244,7 @@ class DynE_Attn(nn.Module):
 
         return out
 
-class DynELayer(nn.Module):
+class DynELayer_new(nn.Module):
     def __init__(
             self,
             n_embd,  # dimension of the input features
