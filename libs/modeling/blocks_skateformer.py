@@ -5,6 +5,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 from .blocks import LayerNorm, AffineDropPath
+from timm.models.layers import drop_path, trunc_normal_, Mlp, DropPath, create_act_layer, get_norm_act_layer, create_conv2d
 
 try:
     from .weight_init import trunc_normal_
@@ -12,23 +13,23 @@ except:
     from weight_init import trunc_normal_
 
 def type_1_partition(input, partition_size):  # partition_size = [N]
-    B, C, T, V = input.shape
+    B, C, T = input.shape
     partitions = input.view(B, C, T // partition_size, partition_size)
-    partitions = partitions.permute(0, 2, 3, 1).contiguous().view(-1, partition_size[0], C)
+    partitions = partitions.permute(0, 2, 3, 1).contiguous().view(-1, partition_size, C)
     return partitions
 
 
 def type_1_reverse(partitions, original_size, partition_size):  # original_size = [T]
     T = original_size
     B = int(partitions.shape[0] / (T / partition_size))
-    output = partitions.view(B, T / partition_size, partition_size, -1)
+    output = partitions.view(B, T // partition_size, partition_size, -1)
     output = output.permute(0, 3, 1, 2).contiguous().view(B, -1, T)
     return output
 
 
 
 def type_2_partition(input, partition_size):  # partition_size = [M]
-    B, C, T, V = input.shape
+    B, C, T = input.shape
     partitions = input.view(B, C, partition_size, T // partition_size)
     partitions = partitions.permute(0, 3, 2, 1).contiguous().view(-1, partition_size, C)
     return partitions
@@ -37,7 +38,7 @@ def type_2_partition(input, partition_size):  # partition_size = [M]
 def type_2_reverse(partitions, original_size, partition_size):  # original_size = [T]
     T = original_size
     B = int(partitions.shape[0] / (T / partition_size))
-    output = partitions.view(B, T // partition_size[0], partition_size, -1)
+    output = partitions.view(B, T // partition_size, partition_size, -1)
     output = output.permute(0, 3, 2, 1).contiguous().view(B, -1, T)
     return output
 
@@ -57,43 +58,28 @@ def get_relative_position_index_1d(T):
 
 
 class MultiHeadSelfAttention(nn.Module):
-    def __init__(self, in_channels, rel_type, num_heads=32, partition_size=(1, 1), attn_drop=0., rel=True):
+    def __init__(self, in_channels, rel_type, num_heads=16, partition_size=1, attn_drop=0., rel=True):
         super(MultiHeadSelfAttention, self).__init__()
         self.in_channels = in_channels
         self.rel_type = rel_type
         self.num_heads = num_heads
         self.partition_size = partition_size
         self.scale = num_heads ** -0.5
-        self.attn_area = partition_size[0] * partition_size[1]
+        self.attn_area = partition_size
         self.attn_drop = nn.Dropout(p=attn_drop)
         self.softmax = nn.Softmax(dim=-1)
         self.rel = rel
-
         if self.rel:
-            if self.rel_type == 'type_1':
-                self.relative_position_bias_table = nn.Parameter(torch.zeros((2 * partition_size - 1), num_heads))
-                self.register_buffer("relative_position_index", get_relative_position_index_1d(partition_size))
-                trunc_normal_(self.relative_position_bias_table, std=.02)
-                self.ones = torch.ones(partition_size[1], partition_size[1], num_heads)
-            elif self.rel_type == 'type_2' or self.rel_type == 'type_4':
-                self.relative_position_bias_table = nn.Parameter(
-                    torch.zeros((2 * partition_size[0] - 1), partition_size[1], partition_size[1], num_heads))
-                self.register_buffer("relative_position_index", get_relative_position_index_1d(partition_size[0]))
-                trunc_normal_(self.relative_position_bias_table, std=.02)
+            self.relative_position_bias_table = nn.Parameter(torch.zeros((2 * partition_size - 1), num_heads))
+            self.register_buffer("relative_position_index", get_relative_position_index_1d(partition_size))
+            trunc_normal_(self.relative_position_bias_table, std=.02)
     
 
     def _get_relative_positional_bias(self):
-        if self.rel_type == 'type_1':
-            relative_position_bias = self.relative_position_bias_table[self.relative_position_index.view(-1)].view(
-                self.partition_size[0], self.partition_size[0], -1)
-            relative_position_bias = relative_position_bias.unsqueeze(1).unsqueeze(3).repeat(1, self.partition_size[1], 1, self.partition_size[1], 1, 1).view(self.attn_area, self.attn_area, -1)
-            relative_position_bias = relative_position_bias.permute(2, 0, 1).contiguous()
-            return relative_position_bias.unsqueeze(0)
-        elif self.rel_type == 'type_2':
-            relative_position_bias = self.relative_position_bias_table[self.relative_position_index.view(-1)].view(self.partition_size[0], self.partition_size[0], self.partition_size[1], self.partition_size[1], -1)
-            relative_position_bias = relative_position_bias.permute(0, 2, 1, 3, 4).contiguous().view(self.attn_area, self.attn_area, -1)
-            relative_position_bias = relative_position_bias.permute(2, 0, 1).contiguous()
-            return relative_position_bias.unsqueeze(0)
+        relative_position_bias = self.relative_position_bias_table[self.relative_position_index.view(-1)].view(
+            self.partition_size, self.partition_size, -1)
+        relative_position_bias = relative_position_bias.permute(2, 0, 1).contiguous()
+        return relative_position_bias.unsqueeze(0)
 
     def forward(self, input):
         B_, N, C = input.shape
@@ -112,14 +98,13 @@ class MultiHeadSelfAttention(nn.Module):
 
 
 class SkateFormerBlock(nn.Module):
-    def __init__(self, in_channels, num_points=50, kernel_size=7, num_heads=32,
-                 type_1_size=1, type_2_size=1,
-                 attn_drop=0., drop=0., rel=True, drop_path=0., mlp_ratio=4.,
+    def __init__(self, in_channels, kernel_size=7, num_heads=16,
+                 type_1_size=8, type_2_size=8,
+                 attn_drop=0.5, drop=0., rel=True, drop_path=0.2, mlp_ratio=4.,
                  act_layer=nn.GELU, norm_layer=nn.LayerNorm):
         super(SkateFormerBlock, self).__init__()
         self.type_1_size = type_1_size
         self.type_2_size = type_2_size
-        self.type_3_size = type_3_size
         self.partition_function = [type_1_partition, type_2_partition]
         self.reverse_function = [type_1_reverse, type_2_reverse]
         self.partition_size = [type_1_size, type_2_size]
@@ -129,8 +114,8 @@ class SkateFormerBlock(nn.Module):
         self.mapping = nn.Linear(in_features=in_channels, out_features=2 * in_channels, bias=True)
         # self.gconv = nn.Parameter(torch.zeros(num_heads // (2 * 2), num_points, num_points))
         # trunc_normal_(self.gconv, std=.02)
-        self.tconv = nn.Conv2d(in_channels // (2), in_channels // (2), kernel_size=(kernel_size, 1),
-                               padding=((kernel_size - 1) // 2, 0), groups=num_heads // (2))
+        self.tconv = nn.Conv1d(in_channels // 2, in_channels // 2, kernel_size=kernel_size,
+                               padding=(kernel_size - 1) // 2, groups=num_heads // 2)
 
         # Attention layers
         attention = []
@@ -180,16 +165,16 @@ class SkateFormerBlock(nn.Module):
         for i in range(len(self.partition_function)):
             C = split_f_attn[i].shape[1]
             input_partitioned = self.partition_function[i](split_f_attn[i], self.partition_size[i])
-            input_partitioned = input_partitioned.view(-1, self.partition_size[i][0] * self.partition_size[i][1], C)
-            y.append(self.reverse_function[i](self.attention[i](input_partitioned), (T, V), self.partition_size[i]))
+            # input_partitioned = input_partitioned.view(-1, self.partition_size[i], C)
+            y.append(self.reverse_function[i](self.attention[i](input_partitioned), T, self.partition_size[i]))
 
-        output = self.proj(torch.cat(y, dim=1).permute(0, 2, 3, 1).contiguous())
+        output = self.proj(torch.cat(y, dim=1).permute(0, 2, 1).contiguous())
         output = self.proj_drop(output)
         output = skip + self.drop_path(output)
 
         # Feed Forward
         output = output + self.drop_path(self.mlp(self.norm_2(output)))
-        output = output.permute(0, 3, 1, 2).contiguous()
+        output = output.permute(0, 2, 1).contiguous()
         return output
 
 class DynE_Attn(nn.Module):
@@ -200,12 +185,11 @@ class DynE_Attn(nn.Module):
             k=1.5,  # k
             init_conv_vars=0.1  # init gaussian variance for the weight
     ):
-
+        super().__init__()
         assert kernel_size % 2 == 1
         # add 1 to avoid have the same size as the instant-level branch
         up_size = round((kernel_size + 1) * k)
         up_size = up_size + 1 if up_size % 2 == 0 else up_size
-
         self.ln = LayerNorm(n_embd)
 
         self.psi    = nn.Conv1d(n_embd, n_embd, kernel_size, stride=1, padding=kernel_size // 2, groups=n_embd)
@@ -244,7 +228,7 @@ class DynE_Attn(nn.Module):
 
         return out
 
-class DynELayer_new(nn.Module):
+class DynESkateformerLayer(nn.Module):
     def __init__(
             self,
             n_embd,  # dimension of the input features
@@ -300,19 +284,6 @@ class DynELayer_new(nn.Module):
             self.drop_path_mlp = nn.Identity()
 
         self.act = act_layer()
-        self.reset_params(init_conv_vars=init_conv_vars)
-
-    def reset_params(self, init_conv_vars=0):
-        torch.nn.init.normal_(self.psi.weight, 0, init_conv_vars)
-        torch.nn.init.normal_(self.fc.weight, 0, init_conv_vars)
-        torch.nn.init.normal_(self.convw.weight, 0, init_conv_vars)
-        torch.nn.init.normal_(self.convkw.weight, 0, init_conv_vars)
-        torch.nn.init.normal_(self.global_fc.weight, 0, init_conv_vars)
-        torch.nn.init.constant_(self.psi.bias, 0)
-        torch.nn.init.constant_(self.fc.bias, 0)
-        torch.nn.init.constant_(self.convw.bias, 0)
-        torch.nn.init.constant_(self.convkw.bias, 0)
-        torch.nn.init.constant_(self.global_fc.bias, 0)
 
     def forward(self, x, mask):
         # X shape: B, C, T
@@ -329,5 +300,76 @@ class DynELayer_new(nn.Module):
         out = x * out_mask + self.drop_path_out(out)
         # FFN
         out = out + self.drop_path_mlp(self.mlp(self.gn(out)))
+
+        return out, out_mask.bool()
+
+
+class DynESkateformerv2Layer(nn.Module):
+    def __init__(
+            self,
+            n_embd,  # dimension of the input features
+            kernel_size=3,  # conv kernel size
+            n_ds_stride=1,  # downsampling stride for the current layer
+            k=1.5,  # k
+            group=1,  # group for cnn
+            n_out=None,  # output dimension, if None, set to input dim
+            n_hidden=None,  # hidden dim for mlp
+            path_pdrop=0.0,  # drop path rate
+            act_layer=nn.GELU,  # nonlinear activation used in mlp,
+            init_conv_vars=0.1  # init gaussian variance for the weight
+    ):
+        super().__init__()
+
+        self.kernel_size = kernel_size
+        self.stride = n_ds_stride
+        if n_out is None:
+            n_out = n_embd
+
+        self.gn = nn.GroupNorm(16, n_embd)
+
+        self.dyne_skate = SkateFormerBlock(n_embd)
+
+        if n_ds_stride > 1:
+                kernel_size, stride, padding = \
+                    n_ds_stride + 1, n_ds_stride, (n_ds_stride + 1) // 2
+                self.downsample = nn.MaxPool1d(
+                    kernel_size, stride=stride, padding=padding)
+                self.stride = stride
+        else:
+            self.downsample = nn.Identity()
+            self.stride = 1
+
+        # two layer mlp
+        if n_hidden is None:
+            n_hidden = 4 * n_embd  # default
+        if n_out is None:
+            n_out = n_embd
+            
+        self.mlp = nn.Sequential(
+            nn.Conv1d(n_embd, n_hidden, 1, groups=group),
+            act_layer(),
+            nn.Conv1d(n_hidden, n_out, 1, groups=group),
+        )
+
+        # drop path
+        if path_pdrop > 0.0:
+            self.drop_path_out = AffineDropPath(n_embd, drop_prob=path_pdrop)
+            self.drop_path_mlp = AffineDropPath(n_out, drop_prob=path_pdrop)
+        else:
+            self.drop_path_out = nn.Identity()
+            self.drop_path_mlp = nn.Identity()
+
+        self.act = act_layer()
+
+    def forward(self, x, mask):
+        # X shape: B, C, T
+        B, C, T = x.shape
+        x = self.downsample(x)
+        out_mask = F.interpolate(
+            mask.to(x.dtype),
+            size=torch.div(T, self.stride, rounding_mode='trunc'),
+            mode='nearest'
+        ).detach()
+        out = self.dyne_skate(x)
 
         return out, out_mask.bool()
