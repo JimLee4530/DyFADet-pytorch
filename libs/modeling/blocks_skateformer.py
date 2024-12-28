@@ -95,10 +95,8 @@ class MultiHeadSelfAttention(nn.Module):
         return output
 
 ''' SkateFormer Block '''
-
-
 class SkateFormerBlock(nn.Module):
-    def __init__(self, in_channels, kernel_size=7, num_heads=16,
+    def __init__(self, in_channels, kernel_size=15, num_heads=32,
                  type_1_size=8, type_2_size=8,
                  attn_drop=0.5, drop=0., rel=True, drop_path=0.2, mlp_ratio=4.,
                  act_layer=nn.GELU, norm_layer=nn.LayerNorm):
@@ -174,6 +172,75 @@ class SkateFormerBlock(nn.Module):
 
         # Feed Forward
         output = output + self.drop_path(self.mlp(self.norm_2(output)))
+        output = output.permute(0, 2, 1).contiguous()
+        return output
+
+''' SkateFormerv2 Block '''
+class SkateFormerv2Block(nn.Module):
+    def __init__(self, in_channels, kernel_size=15, num_heads=16,
+                 type_1_size=8, type_2_size=8,
+                 attn_drop=0.5, drop=0., rel=True, drop_path=0.2, mlp_ratio=4.,
+                 act_layer=nn.GELU, norm_layer=nn.LayerNorm):
+        super(SkateFormerv2Block, self).__init__()
+        self.type_1_size = type_1_size
+        self.type_2_size = type_2_size
+        self.partition_function = [type_1_partition, type_2_partition]
+        self.reverse_function = [type_1_reverse, type_2_reverse]
+        self.partition_size = [type_1_size, type_2_size]
+        self.rel_type = ['type_1', 'type_2']
+
+        self.mapping = nn.Linear(in_features=in_channels, out_features=2 * in_channels, bias=True)
+        # self.gconv = nn.Parameter(torch.zeros(num_heads // (2 * 2), num_points, num_points))
+        # trunc_normal_(self.gconv, std=.02)
+        self.tconv = nn.Conv1d(in_channels // 2, in_channels // 2, kernel_size=kernel_size,
+                               padding=(kernel_size - 1) // 2, groups=num_heads // 2)
+
+        # Attention layers
+        attention = []
+        for i in range(len(self.partition_function)):
+            attention.append(
+                MultiHeadSelfAttention(in_channels=in_channels // (len(self.partition_function) * 2),
+                                       rel_type=self.rel_type[i],
+                                       num_heads=num_heads // (len(self.partition_function) * 2),
+                                       partition_size=self.partition_size[i], attn_drop=attn_drop, rel=rel))
+        self.attention = nn.ModuleList(attention)
+
+        self.proj = nn.Linear(in_features=in_channels, out_features=in_channels, bias=True)
+        self.proj_drop = nn.Dropout(p=drop)
+
+    def forward(self, input):
+        B, C, T = input.shape
+
+        # Partition
+        input = input.permute(0, 2, 1).contiguous()
+
+        f = self.mapping(input).permute(0, 2, 1).contiguous()
+
+        f_conv, f_attn = torch.split(f, [C // 2, 3 * C // 2], dim=1)
+        y = []
+
+        # G-Conv
+        # split_f_conv = torch.chunk(f_conv, 2, dim=1)
+        # y_gconv = []
+        # split_f_gconv = torch.chunk(split_f_conv[0], self.gconv.shape[0], dim=1)
+        # for i in range(self.gconv.shape[0]):
+        #     z = torch.einsum('n c t u, v u -> n c t v', split_f_gconv[i], self.gconv[i])
+        #     y_gconv.append(z)
+        # y.append(torch.cat(y_gconv, dim=1))  # N C T V
+
+        # T-Conv
+        y.append(self.tconv(f_conv))
+
+        # Skate-MSA
+        split_f_attn = torch.chunk(f_attn, len(self.partition_function), dim=1)
+
+        for i in range(len(self.partition_function)):
+            C = split_f_attn[i].shape[1]
+            input_partitioned = self.partition_function[i](split_f_attn[i], self.partition_size[i])
+            # input_partitioned = input_partitioned.view(-1, self.partition_size[i], C)
+            y.append(self.reverse_function[i](self.attention[i](input_partitioned), T, self.partition_size[i]))
+
+        output = self.proj(torch.cat(y, dim=1).permute(0, 2, 1).contiguous())
         output = output.permute(0, 2, 1).contiguous()
         return output
 
@@ -327,7 +394,7 @@ class DynESkateformerv2Layer(nn.Module):
 
         self.gn = nn.GroupNorm(16, n_embd)
 
-        self.dyne_skate = SkateFormerBlock(n_embd)
+        self.dyne_skate = SkateFormerBlock(n_embd, kernel_size)
 
         if n_ds_stride > 1:
                 kernel_size, stride, padding = \
@@ -371,5 +438,83 @@ class DynESkateformerv2Layer(nn.Module):
             mode='nearest'
         ).detach()
         out = self.dyne_skate(x)
+
+        return out, out_mask.bool()
+
+class DynESkateformerv3Layer(nn.Module):
+    def __init__(
+            self,
+            n_embd,  # dimension of the input features
+            kernel_size=3,  # conv kernel size
+            n_ds_stride=1,  # downsampling stride for the current layer
+            k=1.5,  # k
+            group=1,  # group for cnn
+            n_out=None,  # output dimension, if None, set to input dim
+            n_hidden=None,  # hidden dim for mlp
+            path_pdrop=0.0,  # drop path rate
+            act_layer=nn.GELU,  # nonlinear activation used in mlp,
+            init_conv_vars=0.1  # init gaussian variance for the weight
+    ):
+        super().__init__()
+
+        self.kernel_size = kernel_size
+        self.stride = n_ds_stride
+        if n_out is None:
+            n_out = n_embd
+
+        self.gn = nn.GroupNorm(16, n_embd)
+        self.ln = LayerNorm(n_embd)
+
+        self.dyne_attn = SkateFormerv2Block(n_embd, kernel_size)
+
+        if n_ds_stride > 1:
+                kernel_size, stride, padding = \
+                    n_ds_stride + 1, n_ds_stride, (n_ds_stride + 1) // 2
+                self.downsample = nn.MaxPool1d(
+                    kernel_size, stride=stride, padding=padding)
+                self.stride = stride
+        else:
+            self.downsample = nn.Identity()
+            self.stride = 1
+
+        # two layer mlp
+        if n_hidden is None:
+            n_hidden = 4 * n_embd  # default
+        if n_out is None:
+            n_out = n_embd
+            
+        self.mlp = nn.Sequential(
+            nn.Conv1d(n_embd, n_hidden, 1, groups=group),
+            act_layer(),
+            nn.Conv1d(n_hidden, n_out, 1, groups=group),
+        )
+
+        # drop path
+        if path_pdrop > 0.0:
+            self.drop_path_out = AffineDropPath(n_embd, drop_prob=path_pdrop)
+            self.drop_path_mlp = AffineDropPath(n_out, drop_prob=path_pdrop)
+        else:
+            self.drop_path_out = nn.Identity()
+            self.drop_path_mlp = nn.Identity()
+
+        self.act = act_layer()
+
+    def forward(self, x, mask):
+        # X shape: B, C, T
+        B, C, T = x.shape
+        x = self.downsample(x)
+        out_mask = F.interpolate(
+            mask.to(x.dtype),
+            size=torch.div(T, self.stride, rounding_mode='trunc'),
+            mode='nearest'
+        ).detach()
+
+        out = self.ln(x)
+
+        out = self.dyne_attn(out) + out
+        
+        out = x * out_mask + self.drop_path_out(out)
+        # FFN
+        out = out + self.drop_path_mlp(self.mlp(self.gn(out)))
 
         return out, out_mask.bool()

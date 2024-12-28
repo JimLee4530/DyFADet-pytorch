@@ -64,7 +64,7 @@ def make_optimizer(model, optimizer_config):
     decay = set()
     no_decay = set()
     whitelist_weight_modules = (torch.nn.Linear, torch.nn.Conv1d, MaskedConv1D)
-    blacklist_weight_modules = (LayerNorm, torch.nn.GroupNorm, torch.nn.BatchNorm1d)
+    blacklist_weight_modules = (LayerNorm, torch.nn.GroupNorm, torch.nn.BatchNorm1d, torch.nn.LayerNorm)
 
     # loop over all modules / params
     for mn, m in model.named_modules():
@@ -94,8 +94,8 @@ def make_optimizer(model, optimizer_config):
             elif 'odc_norm' in pn or 'odp_norm' in pn:
                 # norm in MaskedDC1D
                 no_decay.add(fpn)
-            # elif 'act_blocks' in pn:
-            #     no_decay.add(fpn)
+            elif 'relative_position_bias_table' in pn:
+                decay.add(fpn)
             # else:
             #     print(pn)
             #     breakpoint()

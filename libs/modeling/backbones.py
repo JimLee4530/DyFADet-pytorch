@@ -8,7 +8,7 @@ from .models import register_backbone
 
 from .blocks_cloformer import DynELayerv2, DynELayerv3, DynELayerv4, DynELayerv5, DynELayerv6, DynELayerv7
 from .blocks_aca import DynELayer_aca
-from .blocks_skateformer import DynELayer_new
+from .blocks_skateformer import DynESkateformerLayer, DynESkateformerv2Layer, DynESkateformerv3Layer
 
 @register_backbone("DynE")
 class DynEBackbone(nn.Module):
@@ -997,12 +997,12 @@ class DynESkateformerBackbone(nn.Module):
         self.stem = nn.ModuleList()
         for idx in range(arch[1]):
             self.stem.append(
-                DynELayer_new(n_embd, 1, 1, n_hidden=mlp_dim, k=k, init_conv_vars=init_conv_vars))
+                DynESkateformerv3Layer(n_embd, 1, 1, n_hidden=mlp_dim, k=k, init_conv_vars=init_conv_vars))
         
         # main branch using transformer with pooling
         self.branch = nn.ModuleList()
         for idx in range(arch[2]):
-            self.branch.append(DynELayer_new(n_embd, self.encoder_win_size[1 + idx], self.scale_factor, path_pdrop=path_pdrop,
+            self.branch.append(DynESkateformerv3Layer(n_embd, self.encoder_win_size[1 + idx], self.scale_factor, path_pdrop=path_pdrop,
                                         n_hidden=mlp_dim, k=k,
                                         init_conv_vars=init_conv_vars))
         # init weights
