@@ -17,7 +17,7 @@ dataset: {
 }
 
 model: {
-  backbone_type: 'DynE_Skateformer',
+  backbone_type: 'DynESCConv',
   fpn_type: identity,
   max_buffer_len_factor: 1.0,
   backbone_arch: [ 2, 2, 5 ],
